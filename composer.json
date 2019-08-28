@@ -1,0 +1,40 @@
+{
+    "name": "yupmin/laravel-worker",
+    "description": "Laravel Job Worker",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "yun young jin",
+            "email": "yupmin@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1.3",
+        "ext-json": "*",
+        "illuminate/events": "~5.6.0|~5.7.0|~5.8.0|^0.6",
+        "illuminate/broadcasting": "~5.6.0|~5.7.0|~5.8.0|^0.6",
+        "illuminate/console": "~5.6.0|~5.7.0|~5.8.0|^0.6",
+        "illuminate/redis": "~5.6.0|~5.7.0|~5.8.0|^0.6",
+        "illuminate/support": "~5.6.0|~5.7.0|~5.8.0|^0.6",
+        "illuminate/contracts": "~5.6.0|~5.7.0|~5.8.0|^0.6",
+        "php-amqplib/php-amqplib": "^2.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yupmin\\Worker\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yupmin\\Worker\\Test\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Yupmin\\Worker\\ServiceProvider"
+            ]
+        }
+    }
+}

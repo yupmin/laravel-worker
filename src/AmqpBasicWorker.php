@@ -2,7 +2,6 @@
 
 namespace Yupmin\Worker;
 
-use ErrorException;
 use Exception;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -18,9 +17,6 @@ class AmqpBasicWorker implements WorkerInterface
 
     /** @var AMQPStreamConnection */
     protected $connection;
-
-    /** @var bool */
-    protected $durable;
 
     /**
      * AmqpBasicWorker constructor.
@@ -43,7 +39,6 @@ class AmqpBasicWorker implements WorkerInterface
             $config['password'],
             $config['vhost']
         );
-        $this->durable = $config['durable'];
     }
 
     /**
@@ -56,9 +51,9 @@ class AmqpBasicWorker implements WorkerInterface
 
         $channel = $this->connection->channel();
 
-        $channel->queue_declare($this->jobFactory->getQueueName(), false, $this->durable, false, false);
+        $channel->queue_declare($this->jobFactory->getQueueName(), false, $this->config['durable'], false, false);
 
-        $properties = $this->durable
+        $properties = $this->config['durable']
             ? ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]
             : [];
         $AMQPMessage = new AMQPMessage($message, $properties);
@@ -68,6 +63,7 @@ class AmqpBasicWorker implements WorkerInterface
     /**
      * @throws Job\JobException
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws Exception
      */
     public function run(): void
     {
@@ -75,20 +71,20 @@ class AmqpBasicWorker implements WorkerInterface
         $this->eventDispatcher->dispatch(new WorkerRunning($this, $job));
 
         $channel = $this->connection->channel();
-        $channel->queue_declare($this->jobFactory->getQueueName(), false, $this->durable, false, false);
+        $channel->queue_declare($this->jobFactory->getQueueName(), false, $this->config['durable'], false, false);
 
         # $channel->basic_qos(null, 1, null);
         $channel->basic_consume(
             $this->jobFactory->getQueueName(),
             '',
             false,
-            !$this->durable,
+            !$this->config['durable'],
             false,
             false,
             function (AMQPMessage $AMQPMessage) use ($job) {
                 $this->executeJob($job, $AMQPMessage->body);
 
-                if ($this->durable) {
+                if ($this->config['durable']) {
                     /** @var AMQPChannel $channel */
                     $channel = $AMQPMessage->delivery_info['channel'];
                     $channel->basic_ack($AMQPMessage->delivery_info['delivery_tag']);

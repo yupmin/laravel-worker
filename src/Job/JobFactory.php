@@ -18,9 +18,9 @@ class JobFactory
     /**
      * JobFactory constructor.
      * @param Container $app
-     * @param $config
+     * @param array|\Illuminate\Contracts\Config\Repository $config
      */
-    public function __construct(Container $app, $config)
+    public function __construct(Container $app, $config = [])
     {
         $this->app = $app;
         $this->config = $config;

@@ -6,7 +6,6 @@ namespace Yupmin\Worker;
 
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use Illuminate\Foundation\Application as LaravelApplication;
 use Yupmin\Worker\Console\Commands as WorkerCommands;
 use Yupmin\Worker\Listeners as WorkerListeners;
 use Yupmin\Worker\Events as WorkerEvents;
@@ -22,13 +21,11 @@ class ServiceProvider extends BaseServiceProvider
     public function boot(EventDispatcher $eventDispatcher)
     {
         $source = realpath(__DIR__.'/../config/worker.php');
-        if ($this->app instanceof LaravelApplication) {
-            $this->publishes([$source => config_path('worker.php')]);
-        }
-
         $this->mergeConfigFrom($source, 'worker');
 
         if ($this->app->runningInConsole()) {
+            $this->publishes([$source => config_path('worker.php')]);
+
             $this->commands([
                 WorkerCommands\Run::class,
                 WorkerCommands\Send::class,

@@ -1,8 +1,8 @@
 <?php
 
-namespace Yupmin\Worker\Job;
+declare(strict_types=1);
 
-use Closure;
+namespace Yupmin\Worker\Job;
 
 interface JobInterface
 {

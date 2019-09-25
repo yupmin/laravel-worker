@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yupmin\Worker\Job;
 
+use Illuminate\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 
 class JobFactory
@@ -18,9 +21,9 @@ class JobFactory
     /**
      * JobFactory constructor.
      * @param Container $app
-     * @param array|\Illuminate\Contracts\Config\Repository $config
+     * @param Repository $config
      */
-    public function __construct(Container $app, $config = [])
+    public function __construct(Container $app, Repository $config)
     {
         $this->app = $app;
         $this->config = $config;
@@ -34,14 +37,14 @@ class JobFactory
      */
     public function build(string $jobName): JobInterface
     {
-        $jobNames = array_keys($this->config['worker.jobs']);
+        $jobNames = array_keys($this->config->get('worker.jobs'));
         if (!in_array($jobName, $jobNames)) {
             throw new JobException('Not supported job.');
         }
 
         $this->jobName = $jobName;
 
-        return $this->app->make($this->config["worker.jobs.{$jobName}.job_class"]);
+        return $this->app->make($this->config->get("worker.jobs.{$jobName}.job_class"));
     }
 
     public function getQueueName(): string

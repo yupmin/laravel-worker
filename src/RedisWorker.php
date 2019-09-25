@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yupmin\Worker;
 
 use Exception;
@@ -57,7 +59,7 @@ class RedisWorker implements WorkerInterface
         $this->eventDispatcher->dispatch(new WorkerRunning($this, $job));
 
         try {
-            $this->redisManager->subscribe($this->jobFactory->getQueueName(), function ($message) use($job) {
+            $this->redisManager->subscribe($this->jobFactory->getQueueName(), function ($message) use ($job) {
                 $this->executeJob($job, $message);
             });
         } catch (Exception $exception) {

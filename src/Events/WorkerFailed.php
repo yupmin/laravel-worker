@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yupmin\Worker\Events;
 
 use Exception;

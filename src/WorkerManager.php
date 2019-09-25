@@ -37,6 +37,9 @@ class WorkerManager extends Manager
         return new RedisWorker($jobFactory, $redisManager, $eventDispatcher, $config);
     }
 
+    /**
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
     public function createAmqpBasicDriver()
     {
         $jobFactory = $this->app->make(JobFactory::class);
